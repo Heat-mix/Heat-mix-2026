@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Heat-mix 2026">
   <title>Heat-mix 2026</title>
-  <link rel="apple-touch-icon" href="assets/heat-mix-touch-icon.svg">
-  <link rel="icon" href="assets/heat-mix-touch-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/heat-mix-touch-icon.png">
+  <link rel="icon" href="assets/heat-mix-touch-icon.png" type="image/png">
   <style>
 :root {
   --shell-dark: #26282a;
@@ -56,8 +56,8 @@ select {
   display: none;
   place-items: center;
   align-content: center;
-  gap: 1.8vh;
-  padding: 6vh 8vw;
+  gap: 1.1vh;
+  padding: 5vh 6vw;
   text-align: center;
   color: #f4f4f4;
   background:
@@ -80,7 +80,9 @@ select {
 
 .orientation-notice strong {
   color: var(--gold-1);
-  font-size: clamp(18px, 5vh, 30px);
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .notice-logo {
@@ -131,6 +133,9 @@ select {
   width: clamp(72px, 13vw, 120px);
   height: clamp(44px, 12vh, 70px);
   object-fit: contain;
+  object-position: center;
+  flex: 0 0 auto;
+  display: block;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.4));
 }
 
@@ -630,7 +635,7 @@ input[type="range"] {
   background:
     radial-gradient(circle at 50% 31%, rgba(255,255,255,.96) 0 5%, rgba(255,255,255,.5) 20%, transparent 46%),
     linear-gradient(135deg, #f477a4, #f9b3ca 48%, #ffd7e3 56%, #ef739f);
-  box-shadow: inset 0 0 18px rgba(255,255,255,.42), 0 2px 5px rgba(0,0,0,.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -13px 20px rgba(167,37,84,.22), inset 0 0 18px rgba(255,255,255,.42), 0 5px 12px rgba(0,0,0,.35);
 }
 .heat-logo::before,
 .heat-logo::after {
@@ -653,15 +658,21 @@ input[type="range"] {
 .heat-logo__bars i:nth-child(2), .heat-logo__bars i:nth-child(6) { height: 55%; }
 .heat-logo__bars i:nth-child(3), .heat-logo__bars i:nth-child(5) { height: 76%; }
 .heat-logo__bars i:nth-child(4) { height: 100%; }
-.heat-logo__name { position: relative; z-index: 1; font-weight: 800; letter-spacing: 0; background: linear-gradient(#fff7b1 0%, #ffd54a 12%, #ffa900 43%, #b54700 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1px rgba(128,45,0,.72); text-shadow: 0 2px 0 #fff0a5, 0 4px 0 #da7500, 0 7px 7px rgba(118,38,0,.36); }
-.heat-logo__year { position: relative; z-index: 1; margin-top: 3%; padding-left: .13em; font-weight: 800; letter-spacing: .13em; color: #fff1a2; text-shadow: 0 1px 0 #a33b00, 0 3px 4px rgba(95,27,0,.36); }
-.heat-logo--start, .heat-logo--notice { width: min(54vw, 340px); aspect-ratio: 2.2 / 1; }
-.heat-logo--start .heat-logo__name, .heat-logo--notice .heat-logo__name { font-size: clamp(31px, 8.6vw, 58px); }
-.heat-logo--start .heat-logo__year, .heat-logo--notice .heat-logo__year { font-size: clamp(15px, 3.7vw, 25px); }
+.heat-logo__name { position: relative; z-index: 1; font-weight: 800; letter-spacing: 0; background: linear-gradient(180deg, #fffde2 0%, #fff2a1 12%, #ffd65b 26%, #f7a300 47%, #c85a00 73%, #772300 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1.3px rgba(111,35,0,.88); text-shadow: 0 1px 0 #fff8c9, 0 3px 0 #ed9300, 0 5px 0 #aa4200, 0 8px 8px rgba(93,24,0,.46), 0 0 12px rgba(255,237,160,.34); }
+.heat-logo__year { position: relative; z-index: 1; margin-top: 3%; padding-left: .13em; font-weight: 800; letter-spacing: .13em; background: linear-gradient(180deg, #fff9c6, #ffd55a 46%, #c46000); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: .7px rgba(120,43,0,.78); text-shadow: 0 1px 0 #fff5ad, 0 3px 4px rgba(95,27,0,.42); }
+.heat-logo--start { width: min(60vw, 370px); aspect-ratio: 2.2 / 1; }
+.heat-logo--notice { width: min(76vw, 340px); aspect-ratio: 2.2 / 1; }
+.heat-logo--start .heat-logo__name, .heat-logo--notice .heat-logo__name { font-size: 52px; }
+.heat-logo--start .heat-logo__year, .heat-logo--notice .heat-logo__year { font-size: 22px; }
 .heat-logo--compact { width: clamp(72px, 13vw, 120px); height: clamp(44px, 12vh, 70px); flex: 0 0 auto; }
 .heat-logo--compact .heat-logo__name { font-size: clamp(12px, 2.2vw, 18px); }
 .heat-logo--compact .heat-logo__year { font-size: clamp(7px, 1.2vw, 10px); }
 .start-screen h1, .orientation-notice h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+@media (max-width: 350px) {
+  .heat-logo--notice .heat-logo__name { font-size: 44px; }
+  .heat-logo--notice .heat-logo__year { font-size: 19px; }
+  .orientation-notice strong { font-size: 13px; }
+}
 @media (max-height: 390px) { .heat-logo--compact { width: 76px; height: 38px; } }
 
 </style>
@@ -692,10 +703,7 @@ input[type="range"] {
     <section class="instrument" aria-label="シンセサイザー本体">
       <header class="top-bar">
         <div class="brand">
-          <div class="heat-logo heat-logo--compact" aria-hidden="true">
-  <span class="heat-logo__bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-  <span class="heat-logo__name">Heat-mix</span><span class="heat-logo__year">2026</span>
-</div>
+          <img src="assets/heat-mix-2026-logo.png" alt="Heat-mix 2026" class="brand-logo">
           <div>
             <h1>Heat-mix 2026</h1>
             <p>Tuning &amp; Sound Synthesizer</p>
