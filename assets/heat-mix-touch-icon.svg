@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Heat-mix 2026">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffb2ce"/><stop offset=".52" stop-color="#f66f9f"/><stop offset="1" stop-color="#c9306d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#fff4b1"/><stop offset=".44" stop-color="#ffc630"/><stop offset="1" stop-color="#a63e00"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="32" fill="url(#bg)"/>
+  <g fill="url(#gold)" stroke="#8f3600" stroke-width="3">
+    <rect x="42" y="52" width="10" height="28" rx="5"/><rect x="59" y="38" width="10" height="42" rx="5"/>
+    <rect x="76" y="25" width="10" height="55" rx="5"/><rect x="93" y="38" width="10" height="42" rx="5"/>
+    <rect x="110" y="52" width="10" height="28" rx="5"/>
+  </g>
+  <text x="90" y="111" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#fff1a7" stroke="#9d3800" stroke-width="2" paint-order="stroke">Heat-mix</text>
+  <text x="90" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#fff1a7">2026</text>
+</svg>
