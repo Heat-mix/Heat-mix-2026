@@ -350,6 +350,10 @@ input[type="range"] {
   grid-template-columns: 1fr 1fr;
 }
 
+.basic-actions #showDetail {
+  grid-column: 1 / -1;
+}
+
 .metronome {
   grid-template-columns: 34px 1fr 1.25fr;
 }
@@ -405,6 +409,12 @@ input[type="range"] {
   border-color: #521916;
   background: linear-gradient(#d98972, #8e3027 58%, #541713);
   text-shadow: 0 1px 1px rgba(0,0,0,.5);
+}
+
+.danger-button.is-feedback,
+.gold-button.is-feedback {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.35), 0 0 8px rgba(255,222,104,.45);
 }
 
 .keyboard-zone {
@@ -767,8 +777,9 @@ input[type="range"] {
               </div>
             </div>
 
-            <div class="action-row">
+            <div class="action-row basic-actions">
               <button id="allStop" class="danger-button" type="button" aria-label="ALL STOP">ALL STOP</button>
+              <button id="soundReset" class="gold-button" type="button" aria-label="SOUND RESET">SOUND RESET</button>
               <button id="showDetail" class="gold-button" type="button" aria-label="詳細設定へ切り替え">詳細設定</button>
             </div>
           </div>
@@ -950,7 +961,7 @@ input[type="range"] {
     [
       "app", "startButton", "voiceButtons", "keyboard", "basicPanel", "detailPanel", "showDetail", "showBasic",
       "masterVolume", "masterValue", "temperamentSelect", "a4Input", "octaveDown", "octaveUp", "octaveValue",
-      "vibratoToggle", "holdToggle", "bpmInput", "metroToggle", "meter3", "meter4", "allStop", "envelopeToggle",
+      "vibratoToggle", "holdToggle", "bpmInput", "metroToggle", "meter3", "meter4", "allStop", "soundReset", "envelopeToggle",
       "attackSlider", "decaySlider", "sustainSlider", "releaseSlider", "toneSlider", "reverbSlider",
       "vibRateSlider", "vibDepthSlider", "attackValue", "decayValue", "sustainValue", "releaseValue",
       "toneValue", "reverbValue", "vibRateValue", "vibDepthValue", "resetSound",
@@ -993,9 +1004,28 @@ input[type="range"] {
   }
 
   async function startApp() {
+    const ready = await ensureAudioRunning();
+    if (ready) {
+      el.app.classList.remove("is-locked");
+    } else {
+      flashButton(el.startButton, "もう一度タップ", "is-feedback", 900);
+    }
+  }
+
+  async function ensureAudioRunning() {
     initAudio();
-    await state.audio.resume();
-    el.app.classList.remove("is-locked");
+    if (!state.audio) return false;
+    if (state.audio.state === "running") return true;
+    try {
+      await state.audio.resume();
+    } catch (error) {
+      console.warn("AudioContext resume failed", error);
+    }
+    if (state.audio.state !== "running") {
+      console.warn("AudioContext is not running", state.audio.state);
+      return false;
+    }
+    return true;
   }
 
   function buildVoiceButtons() {
@@ -1090,7 +1120,11 @@ input[type="range"] {
         saveSettings();
       });
     });
-    el.allStop.addEventListener("click", allStop);
+    el.allStop.addEventListener("click", () => {
+      allStop();
+      flashButton(el.allStop, "STOPPED", "is-feedback", 700);
+    });
+    el.soundReset.addEventListener("click", soundReset);
     el.envelopeToggle.addEventListener("click", () => {
       state.envelopeOn = !state.envelopeOn;
       updateSwitches();
@@ -1139,7 +1173,7 @@ input[type="range"] {
 
   function selectVoice(key) {
     if (key === state.currentVoice) return;
-    fadeOldVoicesForProgramChange();
+    resetPerformanceState({ hard: true, stopMetronome: false, resetHold: true });
     state.currentVoice = key;
     applyVoiceDefaults(key, true);
   }
@@ -1163,13 +1197,20 @@ input[type="range"] {
     saveSettings();
   }
 
-  function handlePointerDown(event) {
+  async function handlePointerDown(event) {
     event.preventDefault();
-    initAudio();
-    state.audio.resume();
     const key = event.target.closest(".key");
     if (!key) return;
-    el.keyboard.setPointerCapture(event.pointerId);
+    const ready = await ensureAudioRunning();
+    if (!ready) {
+      flashButton(el.soundReset, "TAP AGAIN", "is-feedback", 900);
+      return;
+    }
+    try {
+      el.keyboard.setPointerCapture(event.pointerId);
+    } catch {
+      /* pointer capture is optional on some touch browsers */
+    }
     startPointerNote(event.pointerId, key);
   }
 
@@ -1326,6 +1367,7 @@ input[type="range"] {
       lfoGain.connect(osc.frequency);
       lfo.start();
       voice.oscillators.push(lfo);
+      voice.gains.push(lfoGain);
     }
     if (layerAdsr) applyEnvelope(gain.gain, layerAdsr, audio.currentTime, level);
     osc.start();
@@ -1374,25 +1416,72 @@ input[type="range"] {
     state.heldVoices.clear();
   }
 
-  function fadeOldVoicesForProgramChange() {
-    state.activeVoices.slice().forEach((voice) => stopVoice(voice, 0.08));
-    state.pointerNotes.clear();
-    state.heldVoices.clear();
-    document.querySelectorAll(".key.is-down").forEach((key) => key.classList.remove("is-down"));
+  function allStop() {
+    resetPerformanceState({ hard: false, stopMetronome: true, resetHold: true });
   }
 
-  function allStop() {
-    if (!state.audio) return;
+  async function soundReset() {
+    resetPerformanceState({ hard: true, stopMetronome: true, resetHold: true });
+    reconnectAudioOutput();
+    updateVoiceButtons();
+    const ready = await ensureAudioRunning();
+    flashButton(el.soundReset, ready ? "RESET OK" : "TAP AGAIN", "is-feedback", ready ? 850 : 1100);
+  }
+
+  function resetPerformanceState({ hard, stopMetronome, resetHold }) {
     state.pointerNotes.clear();
     state.heldVoices.clear();
+    if (resetHold) state.hold = false;
     document.querySelectorAll(".key.is-down").forEach((key) => key.classList.remove("is-down"));
-    state.activeVoices.slice().forEach((voice) => stopVoice(voice, 0.05));
-    if (state.metronomeRunning) {
+    if (state.audio) {
+      if (hard) {
+        state.activeVoices.slice().forEach((voice) => forceDisposeVoice(voice));
+        state.activeVoices = [];
+      } else {
+        state.activeVoices.slice().forEach((voice) => stopVoice(voice, 0.05));
+      }
+    }
+    if (stopMetronome && state.metronomeRunning) {
       state.metronomeRunning = false;
       clearInterval(state.metroTimer);
       state.metroTimer = null;
-      updateSwitches();
     }
+    updateSwitches();
+  }
+
+  function forceDisposeVoice(voice) {
+    if (!voice) return;
+    voice.stopped = true;
+    disposeVoice(voice);
+  }
+
+  function reconnectAudioOutput() {
+    if (!state.audio || !state.master || !state.compressor) return;
+    try { state.master.disconnect(); } catch { /* already disconnected */ }
+    try { state.compressor.disconnect(); } catch { /* already disconnected */ }
+    try { state.reverbOut.disconnect(); } catch { /* already disconnected */ }
+    try {
+      state.reverbOut.connect(state.master);
+      state.master.connect(state.compressor);
+      state.compressor.connect(state.audio.destination);
+      updateMasterGain();
+      updateReverbMix();
+    } catch (error) {
+      console.warn("Audio output reconnect failed", error);
+    }
+  }
+
+  function flashButton(button, text, className, duration) {
+    if (!button) return;
+    const originalHtml = button.dataset.originalHtml || button.innerHTML;
+    button.dataset.originalHtml = originalHtml;
+    button.textContent = text;
+    button.classList.add(className);
+    clearTimeout(button._feedbackTimer);
+    button._feedbackTimer = setTimeout(() => {
+      button.innerHTML = originalHtml;
+      button.classList.remove(className);
+    }, duration);
   }
 
   function currentAdsr() {
@@ -1446,9 +1535,12 @@ input[type="range"] {
     }
   }
 
-  function toggleMetronome() {
-    initAudio();
-    state.audio.resume();
+  async function toggleMetronome() {
+    const ready = await ensureAudioRunning();
+    if (!ready) {
+      flashButton(el.metroToggle, "TAP AGAIN", "is-feedback", 900);
+      return;
+    }
     state.metronomeRunning = !state.metronomeRunning;
     if (state.metronomeRunning) {
       state.nextMetroTime = state.audio.currentTime + 0.05;
