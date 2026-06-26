@@ -376,6 +376,14 @@ input[type="range"] {
   box-shadow: 0 0 7px rgba(101,255,122,.55), inset 0 2px 5px rgba(0,0,0,.18);
 }
 
+.metro-volume-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(72px, 42%) minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+}
+
 .octave-row {
   grid-template-columns: 1fr 34px 28px 34px;
 }
@@ -540,6 +548,109 @@ input[type="range"] {
   min-width: min(72vw, 320px);
   min-height: 46px;
   font-size: clamp(16px, 3vw, 22px);
+}
+
+.help-button {
+  min-width: min(58vw, 250px);
+  min-height: 34px;
+  font-size: clamp(13px, 2.3vw, 16px);
+}
+
+.help-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background: rgba(11, 13, 15, .72);
+}
+
+.help-modal[hidden] {
+  display: none;
+}
+
+.help-dialog {
+  width: min(92vw, 720px);
+  max-height: min(86dvh, 620px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  text-align: left;
+  color: #151719;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 8px;
+  background: linear-gradient(#f2f4f5, #c5c9cc);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 18px 36px rgba(0,0,0,.45);
+}
+
+.help-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(39,43,46,.28);
+  background: linear-gradient(#dde1e4, #b2b7bb);
+}
+
+.help-header h2 {
+  margin: 0;
+  font-size: clamp(18px, 3vw, 24px);
+}
+
+.help-close {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  font-size: 20px;
+}
+
+.help-content {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  font-size: clamp(13px, 2.1vw, 15px);
+  line-height: 1.55;
+}
+
+.help-section h3 {
+  margin: 0 0 6px;
+  font-size: clamp(15px, 2.5vw, 18px);
+}
+
+.help-section p,
+.help-section ul {
+  margin: 0;
+}
+
+.help-section ul {
+  padding-left: 1.25em;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow-wrap: anywhere;
+  background: rgba(255,255,255,.32);
+}
+
+.help-table th,
+.help-table td {
+  vertical-align: top;
+  border: 1px solid rgba(39,43,46,.28);
+  padding: 8px;
+}
+
+.help-table th {
+  width: 24%;
+  background: rgba(255,255,255,.32);
+  font-weight: 900;
 }
 
 @media (orientation: portrait) {
@@ -708,6 +819,57 @@ input[type="range"] {
       <p>Tuning &amp; Sound Synthesizer</p>
       <p class="rotate-hint">画面を横向きにしてください</p>
       <button id="startButton" class="gold-button start-button" type="button" aria-label="演奏を開始する">演奏を開始する</button>
+      <button id="firstHelp" class="gold-button help-button" type="button" aria-label="初めて使う方へ">初めて使う方へ</button>
+      <div id="helpModal" class="help-modal" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="help-dialog">
+          <div class="help-header">
+            <h2 id="helpTitle">初めて使う方へ</h2>
+            <button id="closeHelp" class="gold-button help-close" type="button" aria-label="閉じる">×</button>
+          </div>
+          <div class="help-content">
+            <section class="help-section">
+              <h3>動作環境の目安</h3>
+              <p>まず、お使いの端末が推奨環境かどうか確認してください。</p>
+              <table class="help-table">
+                <tbody>
+                  <tr>
+                    <th>推奨</th>
+                    <td>iPhone 13以降、iPhone 13 Pro以降、iPhone 14シリーズ、iPhone 15シリーズ、iPad（第9世代以降）、iPad Air（第4世代以降）、iPad Pro、iPad mini（比較的新しい世代）、Safari最新版</td>
+                  </tr>
+                  <tr>
+                    <th>要注意</th>
+                    <td>iPhone SE、iPhone 12以前、古いiPad、古いiPad mini、OSアップデートが停止している端末では、動作が不安定になる場合があります。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <section class="help-section">
+              <h3>使う前の準備</h3>
+              <ul>
+                <li>画面を横向きにしてください</li>
+                <li>端末の音量を少し上げてください</li>
+                <li>マナーモード・消音設定を確認してください</li>
+                <li>「演奏を開始する」を押してください</li>
+                <li>鍵盤を押すと演奏できます</li>
+              </ul>
+            </section>
+            <section class="help-section">
+              <h3>音が鳴らない時</h3>
+              <ul>
+                <li>「音声リセット」を押してください</li>
+                <li>ページを再読み込みしてください</li>
+                <li>ホーム画面版の場合は一度終了して開き直してください</li>
+                <li>端末音量を確認してください</li>
+                <li>Bluetooth接続先を確認してください</li>
+              </ul>
+            </section>
+            <section class="help-section">
+              <h3>イヤホンについて</h3>
+              <p>周囲への音漏れが気になる場合はイヤホンの使用をおすすめします。Bluetoothイヤホンは機種によって音が少し遅れて聞こえる（レイテンシーが発生する）場合があります。鍵盤をリアルタイムに演奏したい場合は、本体スピーカーまたは有線イヤホンの使用をおすすめします。</p>
+            </section>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="instrument" aria-label="シンセサイザー本体">
@@ -775,6 +937,10 @@ input[type="range"] {
                 <button id="meter3" class="mini-button meter-button" type="button" data-meter="3" aria-pressed="false">3/4</button>
                 <button id="meter4" class="mini-button meter-button is-active" type="button" data-meter="4" aria-pressed="true">4/4</button>
               </div>
+              <label class="metro-volume-row">
+                <span>METRO VOL <b id="metroValue">60%</b></span>
+                <input id="metroVolume" type="range" min="0" max="100" value="60" aria-label="メトロノーム音量">
+              </label>
             </div>
 
             <div class="action-row basic-actions">
@@ -924,6 +1090,7 @@ input[type="range"] {
     vibratoOn: false,
     hold: false,
     bpm: 120,
+    metroVolume: 60,
     beatsPerBar: 4,
     metronomeRunning: false,
     nextMetroTime: 0,
@@ -959,9 +1126,9 @@ input[type="range"] {
 
   function cacheElements() {
     [
-      "app", "startButton", "voiceButtons", "keyboard", "basicPanel", "detailPanel", "showDetail", "showBasic",
+      "app", "startButton", "firstHelp", "helpModal", "closeHelp", "voiceButtons", "keyboard", "basicPanel", "detailPanel", "showDetail", "showBasic",
       "masterVolume", "masterValue", "temperamentSelect", "a4Input", "octaveDown", "octaveUp", "octaveValue",
-      "vibratoToggle", "holdToggle", "bpmInput", "metroToggle", "meter3", "meter4", "allStop", "soundReset", "envelopeToggle",
+      "vibratoToggle", "holdToggle", "bpmInput", "metroVolume", "metroValue", "metroToggle", "meter3", "meter4", "allStop", "soundReset", "envelopeToggle",
       "attackSlider", "decaySlider", "sustainSlider", "releaseSlider", "toneSlider", "reverbSlider",
       "vibRateSlider", "vibDepthSlider", "attackValue", "decayValue", "sustainValue", "releaseValue",
       "toneValue", "reverbValue", "vibRateValue", "vibDepthValue", "resetSound",
@@ -1070,6 +1237,14 @@ input[type="range"] {
 
   function bindUI() {
     el.startButton.addEventListener("click", startApp);
+    el.firstHelp.addEventListener("click", openHelp);
+    el.closeHelp.addEventListener("click", closeHelp);
+    el.helpModal.addEventListener("click", (event) => {
+      if (event.target === el.helpModal) closeHelp();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !el.helpModal.hidden) closeHelp();
+    });
     el.showDetail.addEventListener("click", () => switchPanel(true));
     el.showBasic.addEventListener("click", () => switchPanel(false));
     el.masterVolume.addEventListener("input", () => {
@@ -1111,6 +1286,11 @@ input[type="range"] {
       el.bpmInput.value = String(state.bpm);
       saveSettings();
     });
+    el.metroVolume.addEventListener("input", () => {
+      state.metroVolume = Number(el.metroVolume.value);
+      updateMetroVolumeLabel();
+      saveSettings();
+    });
     el.metroToggle.addEventListener("click", toggleMetronome);
     document.querySelectorAll("[data-meter]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -1147,6 +1327,24 @@ input[type="range"] {
 
   function blockKeyboardNativeGesture(event) {
     if (event.cancelable) event.preventDefault();
+  }
+
+  function openHelp() {
+    el.helpModal.hidden = false;
+    safeFocus(el.closeHelp);
+  }
+
+  function closeHelp() {
+    el.helpModal.hidden = true;
+    safeFocus(el.firstHelp);
+  }
+
+  function safeFocus(target) {
+    try {
+      target.focus({ preventScroll: true });
+    } catch {
+      try { target.focus(); } catch { /* focus is optional */ }
+    }
   }
 
   function bindSlider(name) {
@@ -1572,6 +1770,7 @@ input[type="range"] {
   }
 
   function playMetalAccent(time) {
+    const level = metroLevel();
     const osc = state.audio.createOscillator();
     const overtone = state.audio.createOscillator();
     const filter = state.audio.createBiquadFilter();
@@ -1584,12 +1783,12 @@ input[type="range"] {
     filter.frequency.value = 1800;
     filter.Q.value = 5.5;
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.15, time + 0.006);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.15 * level), time + 0.006);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
     osc.connect(filter);
     overtone.connect(filter);
     filter.connect(gain);
-    gain.connect(state.master);
+    gain.connect(state.compressor);
     osc.start(time);
     overtone.start(time);
     osc.stop(time + 0.2);
@@ -1600,6 +1799,7 @@ input[type="range"] {
   }
 
   function playWoodKnock(time) {
+    const level = metroLevel();
     const body = state.audio.createOscillator();
     const low = state.audio.createOscillator();
     const filter = state.audio.createBiquadFilter();
@@ -1612,12 +1812,12 @@ input[type="range"] {
     filter.frequency.value = 650;
     filter.Q.value = 1.2;
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.13, time + 0.004);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.13 * level), time + 0.004);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.11);
     body.connect(filter);
     low.connect(filter);
     filter.connect(gain);
-    gain.connect(state.master);
+    gain.connect(state.compressor);
     body.start(time);
     low.start(time);
     body.stop(time + 0.13);
@@ -1627,12 +1827,17 @@ input[type="range"] {
     }, 190);
   }
 
+  function metroLevel() {
+    return clamp(state.metroVolume, 0, 100) / 100;
+  }
+
   function updateAllUI() {
     el.masterVolume.value = String(state.masterVolume);
     el.temperamentSelect.value = state.temperament;
     el.a4Input.value = state.a4.toFixed(2);
     el.octaveValue.textContent = state.octaveShift > 0 ? `+${state.octaveShift}` : String(state.octaveShift);
     el.bpmInput.value = String(state.bpm);
+    el.metroVolume.value = String(state.metroVolume);
     el.attackSlider.value = String(state.uiAdsr.attack);
     el.decaySlider.value = String(state.uiAdsr.decay);
     el.sustainSlider.value = String(Math.round(state.uiAdsr.sustain * 100));
@@ -1644,6 +1849,7 @@ input[type="range"] {
     updateMasterGain();
     updateReverbMix();
     updateSliderLabels();
+    updateMetroVolumeLabel();
     updateSwitches();
     updateMeterButtons();
     updateVoiceButtons();
@@ -1658,6 +1864,10 @@ input[type="range"] {
     el.reverbValue.textContent = `${Math.round(state.reverb)}%`;
     el.vibRateValue.textContent = `${Number(state.vibRate).toFixed(1)}Hz`;
     el.vibDepthValue.textContent = `${Math.round(state.vibDepth)}cent`;
+  }
+
+  function updateMetroVolumeLabel() {
+    el.metroValue.textContent = `${Math.round(state.metroVolume)}%`;
   }
 
   function updateSwitches() {
@@ -1696,6 +1906,7 @@ input[type="range"] {
         a4: state.a4,
         octaveShift: state.octaveShift,
         masterVolume: state.masterVolume,
+        metroVolume: state.metroVolume,
         envelopeOn: state.envelopeOn,
         uiAdsr: state.uiAdsr,
         tone: state.tone,
@@ -1720,6 +1931,7 @@ input[type="range"] {
       if (typeof saved.a4 === "number") state.a4 = clamp(saved.a4, 416, 550);
       if (typeof saved.octaveShift === "number") state.octaveShift = clamp(saved.octaveShift, -2, 2);
       if (typeof saved.masterVolume === "number") state.masterVolume = clamp(saved.masterVolume, 0, 100);
+      if (typeof saved.metroVolume === "number") state.metroVolume = clamp(saved.metroVolume, 0, 100);
       if (typeof saved.envelopeOn === "boolean") state.envelopeOn = saved.envelopeOn;
       if (saved.uiAdsr) state.uiAdsr = saved.uiAdsr;
       if (typeof saved.tone === "number") state.tone = clamp(saved.tone, 0, 100);
