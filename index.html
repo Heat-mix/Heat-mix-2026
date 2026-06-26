@@ -556,6 +556,19 @@ input[type="range"] {
   font-size: clamp(13px, 2.3vw, 16px);
 }
 
+.start-version {
+  position: absolute;
+  left: 50%;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(244, 246, 247, .52);
+  font-size: clamp(10px, 1.9vw, 12px);
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 .help-modal {
   position: fixed;
   inset: 0;
@@ -820,6 +833,7 @@ input[type="range"] {
       <p class="rotate-hint">画面を横向きにしてください</p>
       <button id="startButton" class="gold-button start-button" type="button" aria-label="演奏を開始する">演奏を開始する</button>
       <button id="firstHelp" class="gold-button help-button" type="button" aria-label="初めて使う方へ">初めて使う方へ</button>
+      <p class="start-version">Ver. 2026-06-26 15:21</p>
       <div id="helpModal" class="help-modal" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
         <div class="help-dialog">
           <div class="help-header">
